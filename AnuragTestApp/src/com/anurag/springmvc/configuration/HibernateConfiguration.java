@@ -1,5 +1,4 @@
 package com.anurag.springmvc.configuration;
-import java.io.File;
 import java.util.Properties;
 
 import javax.sql.DataSource;
@@ -15,6 +14,9 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.hibernate4.HibernateTransactionManager;
 import org.springframework.orm.hibernate4.LocalSessionFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+import com.anurag.springmvc.service.PersonService;
+import com.anurag.springmvc.service.PersonServiceImpl;
  
 @Configuration
 @EnableTransactionManagement
@@ -25,7 +27,7 @@ public class HibernateConfiguration {
     @Autowired
     private Environment environment;
  
-    @Bean
+    @Bean(name = "sessionFactory")
     public LocalSessionFactoryBean sessionFactory() {
         LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
         sessionFactory.setDataSource(dataSource());
@@ -34,7 +36,7 @@ public class HibernateConfiguration {
         return sessionFactory;
      }
      
-    @Bean
+    @Bean(name = "dataSource")
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName(environment.getRequiredProperty("jdbc.driverClassName"));
@@ -52,11 +54,18 @@ public class HibernateConfiguration {
         return properties;        
     }
      
-    @Bean
+    @Bean(name = "transactionManager")
     @Autowired
     public HibernateTransactionManager transactionManager(SessionFactory s) {
        HibernateTransactionManager txManager = new HibernateTransactionManager();
        txManager.setSessionFactory(s);
        return txManager;
     }
+    
+    @Bean(name="personService")
+    public PersonService service(){
+    return new PersonServiceImpl();
+    }
+    
+    
 }
